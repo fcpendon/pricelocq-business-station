@@ -1,29 +1,27 @@
 import React, { useState, useEffect } from 'react';
+import ListStationsPagination from './ListStationsPagination';
+import ListStationsSearch from './ListStationsSearch';
+import ListStationsTable from './ListStationsTable';
+import LoadingSpinner from './LoadingSpinner';
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
-import TextField from '@mui/material/TextField';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableHead from '@mui/material/TableHead';
-import TablePagination from '@mui/material/TablePagination';
-import TableRow from '@mui/material/TableRow';
-import SearchIcon from '@mui/icons-material/Search';
-import CheckIcon from '@mui/icons-material/Check';
 
 const ListStations = (props) => {
   const [search, setSearch] = useState('');
-  const [perPage, setPerPage] = useState(10);
   const [page, setPage] = useState(1);
+  const [perPage, setPerPage] = useState(10);
   const [stations, setStations] = useState([]);
-  const [count, setCount] = useState();
+  const [count, setCount] = useState(0);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    setCount(0);
+    setLoading(true);
     getStations();
-  }, []);
+  }, [search, page, perPage]);
 
   const getStations = () => {
-    const stationsAPI = 'https://staging.api.locq.com/ms-fleet/station?searchKey=' + search + '&perPage=' + perPage + '&page=' + page;
+    const stationsAPI = 'https://staging.api.locq.com/ms-fleet/station?searchKey=' + search  + '&page=' + page+ '&perPage=' + perPage;
 
     const requestOptions = {
       method: 'GET',
@@ -33,62 +31,29 @@ const ListStations = (props) => {
       },
     };
 
+    setStations([]);
+
     fetch(stationsAPI, requestOptions)
       .then(response => response.json())
       .then(data => {
         setStations(data.data.stations);
         setCount(data.data.count);
+        setLoading(false);
       });
   }
 
-  const handleChangePage = (e, newPage) => {
-    setPage(newPage);
-  };
-
-  const handleChangePerPage = (e) => {
-    setPerPage(e.target.value);
-    setPage(1);
-  };
-
   return (
-    <Paper style={{width: 1200, margin: '20px auto', padding: 20}}>
-      <Box sx={{ display: 'flex', alignItems: 'flex-end' }}>
-        <SearchIcon sx={{ color: 'action.active', mr: 1, my: 0.5 }} />
-        <TextField label="Search by station name" variant="standard" />
-        <TablePagination
-          rowsPerPageOptions={[5, 10, 25]}
-          component="div"
-          count={count}
-          rowsPerPage={perPage}
-          page={page - 1}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangePerPage}
-        />
+    <Paper style={{width: 1200, margin: '0px auto 40px', padding: 20}}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between'}}>
+        <ListStationsSearch setSearch={setSearch} setPage={setPage} />
+        <ListStationsPagination setPage={setPage} perPage={perPage} setPerPage={setPerPage} count={count}/>
       </Box>
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell>Station Name</TableCell>
-            <TableCell>City/Province</TableCell>
-            <TableCell>Diesel</TableCell>
-            <TableCell>Gas 91</TableCell>
-            <TableCell>Gas 95</TableCell>
-            <TableCell>Gas 97</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {stations.map(row => (
-            <TableRow key={row.stationId}>
-              <TableCell>{row.name}</TableCell>
-              <TableCell>{row.city}, {row.province}</TableCell>
-              <TableCell>{row.stationProduct.diesel && <CheckIcon />}</TableCell>
-              <TableCell>{row.stationProduct.gas91 && <CheckIcon />}</TableCell>
-              <TableCell>{row.stationProduct.gas95 && <CheckIcon />}</TableCell>
-              <TableCell>{row.stationProduct.gas97 && <CheckIcon />}</TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+      {loading
+        ? <LoadingSpinner />
+        : count
+          ? <ListStationsTable stations={stations} count={count} />
+          : <div>No results found</div>
+      }
     </Paper>
   );
 }
