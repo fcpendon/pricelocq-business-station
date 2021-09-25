@@ -1,8 +1,8 @@
 import './App.css';
 import React, { useState, useEffect } from 'react';
 import Dashboard from './components/Dashboard';
-import Logo from './components/Logo';
 import LoginForm from './components/LoginForm';
+import Logo from './components/Logo';
 
 import '@fontsource/roboto/300.css';
 import '@fontsource/roboto/400.css';
@@ -14,6 +14,7 @@ const App = () => {
 
   useEffect(() => {
     const userData = sessionStorage.getItem('user');
+
     if (userData) {
       let sessionUser = JSON.parse(userData);
       setUser({
@@ -25,11 +26,15 @@ const App = () => {
 
   return (
     <div className="App">
-      <header className="App-header">
-        <Logo />
-      </header>
-
-      { user ? <Dashboard user={user} setUser={setUser}/> : <LoginForm setUser={setUser} /> }
+      {user
+        ? <Dashboard user={user} setUser={setUser}/>
+        : (
+          <div>
+            <Logo style={{ margin: '30px auto' }} />
+            <LoginForm setUser={setUser} />
+          </div>
+        )
+      }
     </div>
   );
 }

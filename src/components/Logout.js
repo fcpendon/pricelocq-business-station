@@ -10,7 +10,7 @@ const Logout = (props) => {
 
   return (
     <Typography color="white">
-      Welcome <span style={{fontWeight: 'bold'}}>{props.user.email}</span> | <Button variant="text" onClick={handleLogout}>Log Out</Button>
+      Welcome <span style={{ fontWeight: 'bold' }}>{props.user.email}</span> | <Button variant="text" onClick={handleLogout}>Log Out</Button>
     </Typography>
   );
 }
