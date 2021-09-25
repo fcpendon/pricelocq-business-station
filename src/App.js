@@ -13,12 +13,12 @@ const App = () => {
   const [user, setUser] = useState();
 
   useEffect(() => {
-    const userData = sessionStorage.getItem("user");
+    const userData = sessionStorage.getItem('user');
     if (userData) {
-      let parsedUserData = JSON.parse(userData);
+      let sessionUser = JSON.parse(userData);
       setUser({
-        email: parsedUserData.email,
-        token: parsedUserData.token
+        email: sessionUser.email,
+        token: sessionUser.token
       });
     }
   }, []);
