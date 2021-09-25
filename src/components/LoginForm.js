@@ -6,18 +6,15 @@ import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 import LoadingButton from '@mui/lab/LoadingButton';
 
-const LoginForm = () => {
+const LoginForm = (props) => {
   const [inputs, setInputs] = useState([]);
   const handleChange = e => setInputs(prevState => ({ ...prevState, [e.target.name]: e.target.value}));
   const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState('');
   const [errors, setErrors] = useState([]);
-  const listErrors = errors.map((error) => <Alert severity="error" key={error}>{error}</Alert>);
 
   function handleSubmit(e) {
     e.preventDefault();
     setLoading(true);
-    setSuccess('');
     setErrors([]);
     attemptLogin();
   }
@@ -30,9 +27,9 @@ const LoginForm = () => {
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({email: inputs.email, password: inputs.password}),
     };
-  
+
     let statusCode = 0;
-  
+
     fetch(loginAPI, requestOptions)
       .then(response => {
         statusCode = response.status;
@@ -40,19 +37,20 @@ const LoginForm = () => {
       })
       .then(data => {
         if (statusCode === 400) {
-          (typeof data.message === "string") ? setErrors([data.message]) : setErrors(data.message); 
+          (typeof data.message === "string") ? setErrors([data.message]) : setErrors(data.message);
+          setLoading(false);
         } else if (statusCode === 201)  {
-          sessionStorage.setItem("token", data.data.AccessToken);
-          setSuccess(data.message);
+          let userData = {email: inputs.email, token: data.data.AccessToken};
+          props.setUser(userData);
+          sessionStorage.setItem("user", JSON.stringify(userData));
         }
-        setLoading(false);
       });
-  } 
+  }
 
   return (
     <form className="login-form" onSubmit={handleSubmit}>
-      <Paper style={{width: 300, margin: '20px auto', padding: 20}}>
-        <Typography variant="h6" color="#6127b7" mb="20px">
+      <Paper style={{width: 300, margin: "20px auto", padding: 20}}>
+        <Typography variant="h6" color="#627b7" mb="20px">
           PriceLOCQ for Business Stations
         </Typography>
         <TextField label="Email" name="email" value={inputs.email || ''} variant="standard" type="email" onChange={handleChange} fullWidth />
@@ -60,10 +58,13 @@ const LoginForm = () => {
         <LoadingButton type="submit" loading={loading} variant="contained" sx={{mt: "40px"}} fullWidth>Log in</LoadingButton>
       </Paper>
 
-      <Stack spacing={1} sx={{mx: "auto", width: 300}}>
-        {(success !== '') ? (<Alert severity="success">{success}</Alert>) : '' }
-        {(errors !== []) ? listErrors : '' }
-      </Stack>
+      {errors && (
+        <Stack spacing={1} sx={{mx: "auto", width: 300}}>
+          {errors.map(error => (
+            <Alert severity="error" key={error}>{error}</Alert>
+          ))}
+        </Stack>
+      )}
     </form>
   );
 }

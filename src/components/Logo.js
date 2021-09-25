@@ -1,5 +1,8 @@
+import React from 'react';
+import logo from '../locq-logo-white.png';
+
 const Logo = () => {
-  return (<img src="https://www.pricelocq.com/assets/locq-logo-white.png" alt="logo"></img>);
+  return (<img src={logo} alt="logo"></img>);
 }
 
 export default Logo;
