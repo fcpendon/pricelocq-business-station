@@ -13,10 +13,11 @@ const ListStations = (props) => {
   const [stations, setStations] = useState([]);
   const [count, setCount] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [message, setMessage] = useState();
 
   useEffect(() => {
-    setCount(0);
     setLoading(true);
+    setMessage('No results found');
     getStations();
   }, [search, page, perPage]);
 
@@ -39,7 +40,12 @@ const ListStations = (props) => {
         setStations(data.data.stations);
         setCount(data.data.count);
         setLoading(false);
+      })
+      .catch(error => {
+        setMessage('Sorry, we have encountered an error');
+        setLoading(false);
       });
+
   }
 
   return (
@@ -52,7 +58,7 @@ const ListStations = (props) => {
         ? <LoadingSpinner />
         : count
           ? <ListStationsTable stations={stations} count={count} />
-          : <div>No results found</div>
+          : <div>{message}</div>
       }
     </Paper>
   );

@@ -50,6 +50,10 @@ const LoginForm = (props) => {
           props.setUser(userData);
           sessionStorage.setItem('user', JSON.stringify(userData));
         }
+      })
+      .catch(error => {
+        setLoading(false);
+        setErrors(['Sorry, we have encountered an error']);
       });
   }
 
