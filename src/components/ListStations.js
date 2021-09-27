@@ -49,8 +49,8 @@ const ListStations = (props) => {
   }
 
   return (
-    <Paper style={{width: 1200, margin: '0px auto 40px', padding: 20}}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between'}}>
+    <Paper style={{ width: 1200, margin: '0px auto 40px', padding: 20 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
         <ListStationsSearch setSearch={setSearch} setPage={setPage} />
         <ListStationsPagination setPage={setPage} perPage={perPage} setPerPage={setPerPage} count={count}/>
       </Box>
